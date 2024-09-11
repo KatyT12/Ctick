@@ -1,0 +1,45 @@
+
+
+Question 1:
+
+The server creates a sockaddr_in struct which defines information such as what IP sockets the server
+accepts (which is any, so INADDR_ANY is used) and the family (IPv4) and the port. Note that it is converted to network
+order, big endian. So the server has a will listen with the listenfd file deescriptor for any connections,
+when a client connects by setting up a sockaddr_in object with the servers information, the server
+will read from the file given to it as input and writ it to the connection fild descripter, essentially
+sending those bytes to the client. The client then reads from this connection and writes it to stoud until there is nothing left for it
+to read. Then the server will close the connection which will terminate the client. The server will wait for other connections from
+client. It also resets file descriptor to point to the top of the file so it can read the whole thing again.
+
+Question 2
+
+1. In client.c the declaration of the variable 'servaddr' is spelt
+incorrectly as 'servadr' instead and later spelt as servaddr to fix this just
+change the declaration to 'servaddr'. It is actually misspelt in multiple
+places, I am going to assume that this counts as a single bug.
+
+2. In server.c it checks if argc ==2 when really it should check if argc == 3 as there are supposed
+to bee two command line arguments (and there is also the name of the progam)
+
+3. In while loop on line 57 the int w isn't initialized to anything, and then it is used in the while loop.
+ it meant to be 0 as the purpose is to count the number of bits written since last recieved message.
+ this will cause undefined behavior potentially.
+
+4. 1 is returned from client.c rather than 0, which means it would be indicating an error where there
+wasn't one
+
+5. missing bracket to end the for loop in server.c and for some reason the return is within the for loop
+aswell which I don't think it should be, atleast not if it wants to handle multiple requests from clients. 
+
+6. In client.c the bytes buffeer has a size of BUFSIZE-1 when it should just be BUFSIZE. Is there any reasoning
+behind the client having a smaller buffer size?
+
+
+Question 3
+
+The browser I assume when entering in localhost:2080 realises this is on the local machine and thereforee makes a request to this
+location and port (I think localhost is synonomous with 127.0.0.1) which is where the server is running,
+so the server sends it the information which the browswer, The browser probably expects HTML or something but it is just getting raw bytes
+from a text file, but I think HTML is quite lax so it just shows the text sent from the server.
+I don't know what the '/tuesdaynightteaclub' part is supposed to do. I think if you are hosting a website or something at the location of request then you
+can navigate files that way but that is not happening with the server here.
